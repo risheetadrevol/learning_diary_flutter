@@ -30,50 +30,69 @@ class _ExamplePageState extends State<ExamplePage> {
     super.dispose();
   }
 
+  List myTempList = [];
+  TextEditingController _nameCont = TextEditingController();
+  List items = [];
   @override
   Widget build(BuildContext context) {
-    final items = <String>[
-      'Grogu',
-      'Mace Windu',
-      'Obi-Wan Kenobi',
-      'Han Solo',
-      'Luke Skywalker',
-      'Darth Vader',
-      'Yoda',
-      'Ahsoka Tano',
-    ];
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Flutter Fortune Wheel'),
       ),
-      body: GestureDetector(
-        onTap: () {
-          setState(() {
-            selected.add(
-              Fortune.randomInt(0, items.length),
-            );
-          });
-        },
-        child: Column(
-          children: [
+      body: Column(
+        children: [
+          TextFormField(
+            controller: _nameCont,
+          ),
+          IconButton(
+              onPressed: () {
+                myTempList.add(_nameCont.text);
+                setState(() {});
+                _nameCont.clear();
+              },
+              icon: Icon(Icons.add)),
+          Table(
+            children: myTempList
+                .map((e) => TableRow(children: [
+                      Text(e),
+                    ]))
+                .toList(),
+          ),
+          ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  items = myTempList;
+                });
+              },
+              child: Text("Get Truth")),
+          if (items.isNotEmpty)
             Expanded(
-              child: FortuneWheel(
-                indicators: [FortuneIndicator(child: Text("data"))],
-                selected: selected.stream,
-                onFling: () {
-                  print("dfctrhb");
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selected.add(
+                      Fortune.randomInt(0, items.length),
+                    );
+                  });
                 },
-                items: [
-                  for (var it in items)
-                    FortuneItem(
-                        style: FortuneItemStyle(color: Colors.yellow),
-                        child: Text(it)),
-                ],
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: FortuneBar(
+                        selected: selected.stream,
+                        items: [
+                          for (var it in items)
+                            FortuneItem(
+                                style: FortuneItemStyle(color: Colors.yellow),
+                                child: Text(it)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -92,6 +111,7 @@ class _ExamplePageState extends State<ExamplePage> {
     });
   }
 }
+
 // curl -X POST \
 //   https://fcm.googleapis.com/fcm/send \
 //   -H 'Authorization: key=' \
