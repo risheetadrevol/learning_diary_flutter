@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 import 'package:http/http.dart';
 
@@ -79,9 +80,9 @@ class _ExamplePageState extends State<ExamplePage> {
 
   getNotificationRequest(
       {required String token, required String title, required String body}) {
-    String key = "";
+    String myKey = dotenv.get('VAR_NAME');
     post(Uri.parse("https://fcm.googleapis.com/fcm/send"), headers: {
-      HttpHeaders.authorizationHeader: "key=",
+      HttpHeaders.authorizationHeader: "key=$myKey",
       HttpHeaders.contentTypeHeader: "application/json",
     }, body: {
       "to": token,
@@ -93,7 +94,7 @@ class _ExamplePageState extends State<ExamplePage> {
 }
 // curl -X POST \
 //   https://fcm.googleapis.com/fcm/send \
-//   -H 'Authorization: key=AAAAG-oB4hk:APA91bFUilE6XqGzlqtr-M-LRl1JisWgEaSDfMZfHuJq3fs7IuvwhjoGM50i0YgU_qayJA8FKk15Uvkuo7SQtQlVt4qdcrrhvnfZyk_8zRGAskzalFUjr2nA2P_2QYNTfK6X8GbY0rni' \
+//   -H 'Authorization: key=' \
 //   -H 'Content-Type: application/json' \
 //   -H 'Postman-Token: c8af5355-dbf2-4762-9b37-a6b89484cf07' \
 //   -H 'cache-control: no-cache' \
