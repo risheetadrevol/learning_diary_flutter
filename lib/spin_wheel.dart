@@ -22,77 +22,83 @@ class ExamplePage extends StatefulWidget {
 }
 
 class _ExamplePageState extends State<ExamplePage> {
-  StreamController<int> selected = StreamController<int>();
-
-  @override
-  void dispose() {
-    selected.close();
-    super.dispose();
+  List myTempList = [
+    "abc",
+  ];
+  TextEditingController _nameCont = TextEditingController(text: "bcd");
+  List items = [];
+  bool isNumeric(String s) {
+    if (s.isEmpty) {
+      return false;
+    }
+    return double.tryParse(s) != null;
   }
 
-  List myTempList = [];
-  TextEditingController _nameCont = TextEditingController();
-  List items = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Flutter Fortune Wheel'),
       ),
-      body: Column(
-        children: [
-          TextFormField(
-            controller: _nameCont,
-          ),
-          IconButton(
-              onPressed: () {
-                myTempList.add(_nameCont.text);
-                setState(() {});
-                _nameCont.clear();
-              },
-              icon: Icon(Icons.add)),
-          Table(
-            children: myTempList
-                .map((e) => TableRow(children: [
-                      Text(e),
-                    ]))
-                .toList(),
-          ),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  items = myTempList;
-                });
-              },
-              child: Text("Get Truth")),
-          if (items.isNotEmpty)
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selected.add(
-                      Fortune.randomInt(0, items.length),
-                    );
-                  });
-                },
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: FortuneBar(
-                        selected: selected.stream,
-                        items: [
-                          for (var it in items)
-                            FortuneItem(
-                                style: FortuneItemStyle(color: Colors.yellow),
-                                child: Text(it)),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+      body: Padding(
+        padding: const EdgeInsets.all(18.0),
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _nameCont,
             ),
-        ],
+            ElevatedButton(
+                onPressed: () {
+                  if (_nameCont.text.isNotEmpty && !isNumeric(_nameCont.text)) {
+                    if (myTempList.indexWhere((element) =>
+                            element.toString().toLowerCase() ==
+                            _nameCont.text.toLowerCase()) ==
+                        -1) {
+                      myTempList.add(_nameCont.text);
+                      setState(() {});
+                      _nameCont.clear();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text("All name in list must be different"),
+                      ));
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text("Please Enter valid name"),
+                    ));
+                  }
+                },
+                child: Text("Add Participants")),
+            Table(
+              children: myTempList
+                  .map((e) => TableRow(children: [
+                        Text(e),
+                        IconButton(
+                            onPressed: () {
+                              // myTempList.remove(e);
+                              // setState(() {});
+                            },
+                            icon: Icon(Icons.delete))
+                      ]))
+                  .toList(),
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  if (myTempList.length > 1) {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) {
+                      return TruthWheel(items: myTempList);
+                    }));
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content:
+                          Text("Length of participants must be more than 1"),
+                    ));
+                  }
+                },
+                child: Text("Start Game")),
+          ],
+        ),
       ),
     );
   }
@@ -126,3 +132,42 @@ class _ExamplePageState extends State<ExamplePage> {
 //     }
 
 // }'
+
+class TruthWheel extends StatefulWidget {
+  const TruthWheel({Key? key, required this.items}) : super(key: key);
+  final List items;
+  @override
+  State<TruthWheel> createState() => _TruthWheelState();
+}
+
+class _TruthWheelState extends State<TruthWheel> {
+  StreamController<int> selected = StreamController<int>();
+
+  @override
+  void dispose() {
+    selected.close();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selected.add(
+            Fortune.randomInt(0, widget.items.length),
+          );
+        });
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(18.0),
+        child: FortuneWheel(
+          selected: selected.stream,
+          items: [
+            for (var it in widget.items) FortuneItem(child: Text(it)),
+          ],
+        ),
+      ),
+    );
+  }
+}
