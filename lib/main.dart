@@ -3,6 +3,7 @@ import 'package:learning_projects/crossword.dart';
 import 'package:learning_projects/spin_wheel.dart';
 
 import 'customscrollview.dart';
+import 'google_pay.dart';
 import 'indexedstack.dart';
 
 void main() {
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
           // is not restarted.
           primarySwatch: Colors.blue,
         ),
-        home: IndexedCalenderView());
+        home: PayMaterialApp());
   }
 }
 
