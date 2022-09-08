@@ -37,7 +37,9 @@ class PaySampleApp extends StatefulWidget {
 }
 
 class _PaySampleAppState extends State<PaySampleApp> {
-  DateTime time = DateTime.now();
+  DateTime time = DateTime.now().add(Duration(minutes: 45));
+  bool isShow = true;
+
   void onGooglePayResult(paymentResult) {
     debugPrint(paymentResult.toString());
   }
@@ -48,6 +50,7 @@ class _PaySampleAppState extends State<PaySampleApp> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: const Text('T-shirt Shop'),
@@ -134,12 +137,45 @@ class _PaySampleAppState extends State<PaySampleApp> {
           const SizedBox(height: 15)
         ],
       ),
-      bottomSheet: Container(
-          height: MediaQuery.of(context).size.height * 0.1,
-          child: Text("Arriving in 5 mins"),
-          alignment: Alignment.center,
-          width: double.infinity,
-          color: Color.fromARGB(255, 255, 255, 0)),
+      bottomSheet: isShow
+          ? Container(
+              height: size.height * 0.3,
+              // alignment: Alignment.center,
+              width: double.infinity,
+              color: Colors.amber,
+              child: Row(
+                children: [
+                  Image.asset(
+                    "assets/delivery.gif",
+                    fit: BoxFit.fitHeight,
+                  ),
+                  TweenAnimationBuilder<Duration>(
+                      duration: Duration(minutes: 1),
+                      tween: Tween(
+                          begin: Duration(minutes: 1), end: Duration.zero),
+                      onEnd: () {
+                        print('Timer ended');
+                        setState(() {
+                          isShow = false;
+                        });
+                      },
+                      builder: (BuildContext context, Duration value,
+                          Widget? child) {
+                        final minutes = value.inMinutes;
+                        final seconds = value.inSeconds % 60;
+                        return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 5),
+                            child: Text(
+                                ' Arriving in $minutes:$seconds mintues',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 30)));
+                      }),
+                ],
+              ))
+          : null,
     );
   }
 }

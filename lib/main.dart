@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:learning_projects/crossword.dart';
+import 'package:learning_projects/recording.dart';
 import 'package:learning_projects/spin_wheel.dart';
 
 import 'customscrollview.dart';
 import 'google_pay.dart';
 import 'indexedstack.dart';
+import 'stripe_payment_link.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,7 +32,7 @@ class MyApp extends StatelessWidget {
           // is not restarted.
           primarySwatch: Colors.blue,
         ),
-        home: PayMaterialApp());
+        home: MyRecorder());
   }
 }
 
