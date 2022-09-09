@@ -1,14 +1,14 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
-
-import 'dart:async';
+import 'package:path_provider/path_provider.dart';
+import 'package:just_audio/just_audio.dart' as jA;
 
 import 'package:audioplayers/audioplayers.dart' as ap;
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
 class AudioRecorder extends StatefulWidget {
   final void Function(String path) onStop;
@@ -33,7 +33,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
     _recordSub = _audioRecorder.onStateChanged().listen((recordState) {
       setState(() => _recordState = recordState);
     });
-
+    saveVideo("myAudio.wav");
     _amplitudeSub = _audioRecorder
         .onAmplitudeChanged(const Duration(milliseconds: 300))
         .listen((amp) => setState(() => _amplitude = amp));
@@ -41,23 +41,19 @@ class _AudioRecorderState extends State<AudioRecorder> {
     super.initState();
   }
 
+  getDownload() {}
+
   Future<void> _start() async {
     try {
       if (await _audioRecorder.hasPermission()) {
         // We don't do anything with this but printing
-        final isSupported = await _audioRecorder.isEncoderSupported(
-          AudioEncoder.pcm16bit,
-        );
-        if (kDebugMode) {
-          print('${AudioEncoder.aacLc.name} supported: $isSupported');
-        }
 
-        // final devs = await _audioRecorder.listInputDevices();
-        // final isRecording = await _audioRecorder.isRecording();
+        final devs = await _audioRecorder.listInputDevices();
+        final isRecording = await _audioRecorder.isRecording();
+        print(devs);
 
         await _audioRecorder.start(
-          path:
-              "/data/user/0/com.example.learning_projects/cache/audio2055535063935887716.wav",
+          // path: path!.path,
           encoder: AudioEncoder.pcm16bit,
           samplingRate: 16000,
           bitRate: 256,
@@ -225,6 +221,63 @@ class _AudioRecorderState extends State<AudioRecorder> {
   }
 }
 
+Future<bool> _requestPermission(Permission permission) async {
+  if (await permission.isGranted) {
+    return true;
+  } else {
+    var result = await permission.request();
+    if (result == PermissionStatus.granted) {
+      return true;
+    }
+  }
+  return false;
+}
+
+Future<bool> saveVideo(String fileName) async {
+  Directory? directory;
+  try {
+    if (Platform.isAndroid) {
+      print("Is android");
+      if (await _requestPermission(Permission.storage)) {
+        directory = await getExternalStorageDirectory();
+        String newPath = "";
+        print(directory);
+        List<String> paths = directory!.path.split("/");
+        for (int x = 1; x < paths.length; x++) {
+          String folder = paths[x];
+          if (folder != "Android") {
+            newPath += "/" + folder;
+          } else {
+            break;
+          }
+        }
+        newPath = newPath + "/RPSApp";
+        directory = Directory(newPath);
+      } else {
+        return false;
+      }
+    } else {
+      if (await _requestPermission(Permission.photos)) {
+        directory = await getTemporaryDirectory();
+      } else {
+        return false;
+      }
+    }
+
+    if (!await directory.exists()) {
+      await directory.create(recursive: true);
+    }
+    if (await directory.exists()) {
+      File saveFile = File(directory.path + "/$fileName");
+      print(saveFile);
+      return true;
+    }
+  } catch (e) {
+    print(e);
+  }
+  return false;
+}
+
 class MyRecorder extends StatefulWidget {
   const MyRecorder({Key? key}) : super(key: key);
 
@@ -300,6 +353,14 @@ class AudioPlayerState extends State<AudioPlayer> {
   late StreamSubscription<Duration> _positionChangedSubscription;
   Duration? _position;
   Duration? _duration;
+
+  playAudio() async {
+    print(widget.source);
+    final player = jA.AudioPlayer(); // Create a player
+    final duration = await player.setUrl(// Load a URL
+        "file:${widget.source}");
+    player.play();
+  }
 
   @override
   void initState() {
@@ -417,6 +478,10 @@ class AudioPlayerState extends State<AudioPlayer> {
   }
 
   Future<void> play() {
+    ap.Source source = kIsWeb
+        ? ap.UrlSource(widget.source)
+        : ap.DeviceFileSource(widget.source);
+
     return _audioPlayer.play(
       kIsWeb ? ap.UrlSource(widget.source) : ap.DeviceFileSource(widget.source),
     );
