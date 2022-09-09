@@ -118,8 +118,7 @@ postRequestTwillio({required String endpoint, required Map myData}) async {
             'https://api.twilio.com/2010-04-01/Accounts/ACfc8c0275fe8f0588a1b6b00761d06af9/Messages.json'),
         data: myData,
         options: Options(headers: {
-          'Authorization':
-              'Basic QUNmYzhjMDI3NWZlOGYwNTg4YTFiNmIwMDc2MWQwNmFmOTpiMTNiNzgxYTk2MmI5MGViYjBiZWRmNmI3NTFiOTk3MQ==',
+          'Authorization': 'Basic ',
           'Content-Type': 'application/x-www-form-urlencoded'
         }));
     return myResponse.data;
