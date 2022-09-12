@@ -163,13 +163,6 @@ class _AudioManagerScreenState extends State<AudioManagerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //Hello,
-// Actually yesterday night, I was not feeling well. My health is not quite good. So, I want to work from home for a few days (depending upon treatment it may extend ). For taking a complete body checkup and then start treatment for the same.
-
-// Thanks and Regards
-// Risheeta Jain
-// Junior Software Engineer
-
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
