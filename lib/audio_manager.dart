@@ -133,7 +133,9 @@ class _AudioManagerScreenState extends State<AudioManagerScreen> {
 
     AudioInfo info = AudioInfo("file://${widget.filePath}",
         title: "file", desc: "local file", coverUrl: "assets/aLIEz.jpg");
-
+    File file = File(widget.filePath);
+    final myBytes = await file.readAsBytes();
+    print(myBytes);
     list.add(info.toJson());
     AudioManager.instance.audioList.add(info);
     setState(() {});

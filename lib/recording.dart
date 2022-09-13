@@ -49,11 +49,11 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
       if (await _requestPermission(Permission.storage)) {
         final appDocDir = await getExternalStorageDirectory();
-        String path = "${appDocDir!.path}/myAudio.m4a";
+        String path = "${appDocDir!.path}/myAudio.wav";
         print(path);
         await _audioRecorder.start(
           path: path,
-          encoder: AudioEncoder.pcm16bit,
+          encoder: AudioEncoder.wav,
           samplingRate: 16000,
           bitRate: 256,
           numChannels: 1,
