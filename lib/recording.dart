@@ -45,14 +45,12 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
   Future<void> _start() async {
     try {
-      // We don't do anything with this but printing
-
       if (await _requestPermission(Permission.storage)) {
         final appDocDir = await getExternalStorageDirectory();
         String path = "${appDocDir!.path}/myAudio.wav";
         print(path);
         await _audioRecorder.start(
-          path: path,
+          // path: path,
           encoder: AudioEncoder.wav,
           samplingRate: 16000,
           bitRate: 256,
@@ -77,9 +75,6 @@ class _AudioRecorderState extends State<AudioRecorder> {
     print("8888888888888888888888888");
     print(path);
     if (path != null) {
-      File file = File(path!);
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => AudioManagerScreen(filePath: path)));
       widget.onStop(path);
     }
   }
@@ -111,6 +106,13 @@ class _AudioRecorderState extends State<AudioRecorder> {
                 _buildText(),
               ],
             ),
+            Text('''
+             path: path (myAudio.wav),
+          encoder: AudioEncoder.wav (Waveform Audio (pcm16bit with headers)),
+          samplingRate: 16000,
+          bitRate: 256,
+          numChannels: 1,
+'''),
             if (_amplitude != null) ...[
               const SizedBox(height: 40),
               Text('Current: ${_amplitude?.current ?? 0.0}'),
