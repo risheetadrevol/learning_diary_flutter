@@ -130,16 +130,8 @@ class _AudioManagerScreenState extends State<AudioManagerScreen> {
 
   void loadFile() async {
     // read bundle file to local path
-    final audioFile = await rootBundle.load("assets/aLIEz.m4a");
-    final audio = audioFile.buffer.asUint8List();
 
-    final appDocDir = await getApplicationDocumentsDirectory();
-    print(appDocDir);
-
-    final file = File(widget.filePath);
-    file.writeAsBytesSync(audio);
-
-    AudioInfo info = AudioInfo("file://${file.path}",
+    AudioInfo info = AudioInfo("file://${widget.filePath}",
         title: "file", desc: "local file", coverUrl: "assets/aLIEz.jpg");
 
     list.add(info.toJson());

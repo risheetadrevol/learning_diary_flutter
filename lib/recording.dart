@@ -3,10 +3,10 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:learning_projects/audio_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:just_audio/just_audio.dart' as jA;
 
 import 'package:audioplayers/audioplayers.dart' as ap;
 
@@ -33,7 +33,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
     _recordSub = _audioRecorder.onStateChanged().listen((recordState) {
       setState(() => _recordState = recordState);
     });
-    saveVideo("myAudio.wav");
+
     _amplitudeSub = _audioRecorder
         .onAmplitudeChanged(const Duration(milliseconds: 300))
         .listen((amp) => setState(() => _amplitude = amp));
@@ -45,24 +45,23 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
   Future<void> _start() async {
     try {
-      if (await _audioRecorder.hasPermission()) {
-        // We don't do anything with this but printing
+      // We don't do anything with this but printing
 
-        final devs = await _audioRecorder.listInputDevices();
-        final isRecording = await _audioRecorder.isRecording();
-        print(devs);
-
+      if (await _requestPermission(Permission.storage)) {
+        final appDocDir = await getExternalStorageDirectory();
+        String path = "${appDocDir!.path}/myAudio.m4a";
+        print(path);
         await _audioRecorder.start(
-          // path: path!.path,
+          path: path,
           encoder: AudioEncoder.pcm16bit,
           samplingRate: 16000,
           bitRate: 256,
           numChannels: 1,
         );
         _recordDuration = 0;
-
-        _startTimer();
       }
+
+      _startTimer();
     } catch (e) {
       if (kDebugMode) {
         print(e);
@@ -78,6 +77,9 @@ class _AudioRecorderState extends State<AudioRecorder> {
     print("8888888888888888888888888");
     print(path);
     if (path != null) {
+      File file = File(path!);
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => AudioManagerScreen(filePath: path)));
       widget.onStop(path);
     }
   }
@@ -226,54 +228,10 @@ Future<bool> _requestPermission(Permission permission) async {
     return true;
   } else {
     var result = await permission.request();
+    print(result);
     if (result == PermissionStatus.granted) {
       return true;
     }
-  }
-  return false;
-}
-
-Future<bool> saveVideo(String fileName) async {
-  Directory? directory;
-  try {
-    if (Platform.isAndroid) {
-      print("Is android");
-      if (await _requestPermission(Permission.storage)) {
-        directory = await getExternalStorageDirectory();
-        String newPath = "";
-        print(directory);
-        List<String> paths = directory!.path.split("/");
-        for (int x = 1; x < paths.length; x++) {
-          String folder = paths[x];
-          if (folder != "Android") {
-            newPath += "/" + folder;
-          } else {
-            break;
-          }
-        }
-        newPath = newPath + "/RPSApp";
-        directory = Directory(newPath);
-      } else {
-        return false;
-      }
-    } else {
-      if (await _requestPermission(Permission.photos)) {
-        directory = await getTemporaryDirectory();
-      } else {
-        return false;
-      }
-    }
-
-    if (!await directory.exists()) {
-      await directory.create(recursive: true);
-    }
-    if (await directory.exists()) {
-      File saveFile = File(directory.path + "/$fileName");
-      print(saveFile);
-      return true;
-    }
-  } catch (e) {
-    print(e);
   }
   return false;
 }
@@ -353,14 +311,6 @@ class AudioPlayerState extends State<AudioPlayer> {
   late StreamSubscription<Duration> _positionChangedSubscription;
   Duration? _position;
   Duration? _duration;
-
-  playAudio() async {
-    print(widget.source);
-    final player = jA.AudioPlayer(); // Create a player
-    final duration = await player.setUrl(// Load a URL
-        "file:${widget.source}");
-    player.play();
-  }
 
   @override
   void initState() {
