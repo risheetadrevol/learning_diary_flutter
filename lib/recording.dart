@@ -45,18 +45,28 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
   Future<void> _start() async {
     try {
-      if (await _requestPermission(Permission.storage)) {
-        final appDocDir = await getExternalStorageDirectory();
-        String path = "${appDocDir!.path}/myAudio.wav";
-        print(path);
+      if (!kIsWeb) {
+        if (await _requestPermission(Permission.storage)) {
+          final appDocDir = await getExternalStorageDirectory();
+          String path = "${appDocDir!.path}/myAudio.wav";
+          print(path);
+          await _audioRecorder.start(
+            path: path,
+            encoder: AudioEncoder.wav,
+            samplingRate: 16000,
+            bitRate: 256,
+            numChannels: 1,
+          );
+          _recordDuration = 0;
+        }
+      } else {
         await _audioRecorder.start(
-          // path: path,
+          path: "myAudio.wav",
           encoder: AudioEncoder.wav,
           samplingRate: 16000,
           bitRate: 256,
           numChannels: 1,
         );
-        _recordDuration = 0;
       }
 
       _startTimer();
@@ -429,10 +439,15 @@ class AudioPlayerState extends State<AudioPlayer> {
     );
   }
 
-  Future<void> play() {
-    ap.Source source = kIsWeb
-        ? ap.UrlSource(widget.source)
-        : ap.DeviceFileSource(widget.source);
+  Future<void> play() async {
+    // final player = JA.AudioPlayer(); // Create a player
+    // final duration = await player.setFilePath(// Load a URL
+    //     widget.source); // Schemes: (https: | file: | asset: )
+    // player.play(); // Play without waiting for completion
+    // await player.play();
+    // ap.Source source = kIsWeb
+    //     ? ap.UrlSource(widget.source)
+    //     : ap.DeviceFileSource(widget.source);
 
     return _audioPlayer.play(
       kIsWeb ? ap.UrlSource(widget.source) : ap.DeviceFileSource(widget.source),

@@ -46,6 +46,7 @@ dependencies:
   permission_handler: ^10.0.0
 
   audio_manager: ^0.8.2
+  url_launcher: ^6.1.5
 
 dev_dependencies:
   flutter_test:

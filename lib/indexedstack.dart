@@ -12,7 +12,8 @@ class IndexedCalenderView extends StatefulWidget {
 
 class _IndexedCalenderViewState extends State<IndexedCalenderView> {
   int currentIndex = 0;
-  int mylistLength = 10;
+  int mylistLength = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,10 +42,7 @@ class _IndexedCalenderViewState extends State<IndexedCalenderView> {
           IndexedStack(
             index: currentIndex,
             children: List.generate(
-                mylistLength,
-                (index) => Container(
-                    child: Text((index + 1).toString()),
-                    color: index % 2 == 0 ? Colors.amber : Colors.red)),
+                mylistLength, (index) => Text((index + 1).toString())),
           ),
         ],
       ),
