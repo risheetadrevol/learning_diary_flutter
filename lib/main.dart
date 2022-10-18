@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'biometric_lock.dart';
 import 'printing_machine.dart';
 
 
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
    
           primarySwatch: Colors.blue,
         ),
-        home: const PrintingClover());
+        home: const BioMetricLock());
   }
 }
 
