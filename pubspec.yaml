@@ -50,6 +50,8 @@ dependencies:
   local_auth: ^2.1.2
   pattern_lock: ^2.0.0
   flutter_screen_lock: ^7.0.4
+  device_info_plus: ^7.0.0
+  flutter_rating_bar: ^4.0.1
 
 dev_dependencies:
   flutter_test:

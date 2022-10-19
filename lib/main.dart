@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'biometric_lock.dart';
+import 'device_info.dart';
 import 'pattern_lock.dart';
 import 'printing_machine.dart';
+import 'ratingbar.dart';
 
 
 void main() {
@@ -20,7 +22,7 @@ class MyApp extends StatelessWidget {
    
           primarySwatch: Colors.blue,
         ),
-        home: const PatternMyLock());
+        home: const RatingBarScreen());
   }
 }
 
