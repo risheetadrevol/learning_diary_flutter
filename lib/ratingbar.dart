@@ -1,3 +1,4 @@
+import 'package:feedback/feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -20,7 +21,7 @@ class RatingBarScreen extends StatelessWidget {
             itemCount: 5,
             updateOnDrag: true,
             glow: false, wrapAlignment: WrapAlignment.spaceEvenly,
-            
+
             // glowColor: ,
             itemBuilder: (context, index) {
               switch (index) {
@@ -57,7 +58,10 @@ class RatingBarScreen extends StatelessWidget {
               }
             },
             onRatingUpdate: (rating) {
-              print(rating);
+              BetterFeedback.of(context).show((UserFeedback feedback) {
+                print(feedback);
+                // Do something with the feedback
+              });
             },
           ),
           PsTextFieldWidgetV2(

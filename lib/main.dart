@@ -1,3 +1,4 @@
+import 'package:feedback/feedback.dart';
 import 'package:flutter/material.dart';
 
 import 'biometric_lock.dart';
@@ -8,8 +9,7 @@ import 'ratingbar.dart';
 
 
 void main() {
-  runApp(const MyApp());
-}
+  runApp(const BetterFeedback(child:MyApp() ));}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
